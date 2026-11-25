@@ -102,6 +102,15 @@ func (a *App) routes() *http.ServeMux {
 			a.render(w, r, http.StatusOK, "Catraca", "<h1>Catraca</h1>", nil)
 		})
 	}
+	organizerURL := url.URL{Path: "/organizador"}
+	if _, pattern := mux.Handler(&http.Request{Method: "GET", URL: &organizerURL}); pattern == "" {
+		mux.HandleFunc("GET /organizador", func(w http.ResponseWriter, r *http.Request) {
+			if _, ok := a.requireRole(w, r, "organizer"); !ok {
+				return
+			}
+			a.render(w, r, http.StatusOK, "Meus eventos", "<h1>Meus eventos</h1>", nil)
+		})
+	}
 	return mux
 }
 

@@ -191,13 +191,21 @@ func (a *App) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	id := randomID("usr_")
-	result, err := a.DB.ExecContext(r.Context(), `INSERT INTO users (id,name,email,password_hash,role)
-		VALUES (?,?,?,?,'participant') ON CONFLICT(email) DO NOTHING`, id, name, email, string(hash))
+	var inserted int64
+	err = a.write(r.Context(), func(conn *sql.Conn) error {
+		result, err := conn.ExecContext(r.Context(), `INSERT INTO users (id,name,email,password_hash,role)
+			VALUES (?,?,?,?,'participant') ON CONFLICT(email) DO NOTHING`, id, name, email, string(hash))
+		if err != nil {
+			return err
+		}
+		inserted, err = result.RowsAffected()
+		return err
+	})
 	if err != nil {
 		http.Error(w, "Erro ao criar conta", http.StatusInternalServerError)
 		return
 	}
-	if inserted, err := result.RowsAffected(); err != nil || inserted != 1 {
+	if inserted != 1 {
 		page.Error = "E-mail já cadastrado"
 		a.render(w, r, http.StatusConflict, page.Title, accountForm, page)
 		return
@@ -237,7 +245,11 @@ func (a *App) logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if token, err := r.Cookie(sessionCookie); err == nil {
-		if _, err := a.DB.ExecContext(r.Context(), "DELETE FROM sessions WHERE token=?", token.Value); err != nil {
+		err := a.write(r.Context(), func(conn *sql.Conn) error {
+			_, err := conn.ExecContext(r.Context(), "DELETE FROM sessions WHERE token=?", token.Value)
+			return err
+		})
+		if err != nil {
 			http.Error(w, "Erro ao encerrar sessão", http.StatusInternalServerError)
 			return
 		}
