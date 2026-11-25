@@ -9,8 +9,11 @@ Pré-requisitos: Git, Docker com Compose, Make e um shell em Linux ou macOS.
 ```sh
 make up
 make gates
+make e2e
 make down
 ```
+
+`make e2e` sobe uma instância isolada com a seed, executa os cenários no Chromium e remove o ambiente de teste. A cobertura cresce por wave.
 
 ## Endereços
 
