@@ -1,7 +1,7 @@
 {
   "F01": {
-    "status": "em andamento",
-    "relatorio": null
+    "status": "em reavaliação",
+    "relatorio": "docs/features/F01/avaliacoes/2026-11-25-1ee3878.md"
   },
   "F02": {
     "status": "pendente",
