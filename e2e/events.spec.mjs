@@ -40,7 +40,7 @@ test('F02: eventos publicados e gestão exclusiva do organizador dono', async ({
   await page.getByLabel('Data e hora de início').fill(past);
   await page.getByRole('button', { name: 'Salvar alterações' }).click();
   await expect(page.getByRole('alert')).toContainText('início no futuro');
-  await page.reload();
+  await page.goto(management);
   await expect(page.getByLabel('Data e hora de início')).toHaveValue(future);
   await page.getByLabel('Lotação').fill('3');
   await page.getByRole('button', { name: 'Salvar alterações' }).click();
