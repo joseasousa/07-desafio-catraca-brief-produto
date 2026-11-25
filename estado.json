@@ -1,0 +1,26 @@
+{
+  "F01": {
+    "status": "em andamento",
+    "relatorio": null
+  },
+  "F02": {
+    "status": "pendente",
+    "relatorio": null
+  },
+  "F03": {
+    "status": "pendente",
+    "relatorio": null
+  },
+  "F04": {
+    "status": "pendente",
+    "relatorio": null
+  },
+  "F05": {
+    "status": "pendente",
+    "relatorio": null
+  },
+  "F06": {
+    "status": "pendente",
+    "relatorio": null
+  }
+}

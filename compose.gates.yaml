@@ -1,0 +1,8 @@
+services:
+  app:
+    ports: !reset []
+  go-gates:
+    build:
+      context: .
+      target: source
+    command: ["sh", "-ec", "test -z \"$(gofmt -l .)\"; go vet ./...; go test ./..."]
