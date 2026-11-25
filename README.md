@@ -13,11 +13,11 @@ make e2e
 make down
 ```
 
-`make e2e` sobe uma instância isolada com a seed, executa os cenários no Chromium e remove o ambiente de teste. A cobertura cresce por wave.
+`make e2e` sobe uma instância isolada com a seed, executa os cenários no Chromium e remove o ambiente de teste.
 
 ## Endereços
 
-- Produto: http://localhost:8080
+- Produto ($WEB): http://localhost:8080
 - API de parceiros ($API): http://localhost:8080 (rotas em `/api/partner`)
 
 ## Credenciais
@@ -33,7 +33,13 @@ Chave de demonstração para `X-Api-Key`: `catraca-local-partner-key`.
 ## Artefatos
 
 - [PRD](docs/PRD.md)
-- [Specs, planos e contratos](docs/features)
+- Specs, planos, contratos e relatórios por feature
+  - [F01 Contas e ambiente](docs/features/F01)
+  - [F02 Eventos](docs/features/F02)
+  - [F03 Compras e gateway](docs/features/F03)
+  - [F04 Checkout web](docs/features/F04)
+  - [F05 API de parceiros](docs/features/F05)
+  - [F06 Operação](docs/features/F06)
 - [Estado](estado.json)
 - [Instruções para agentes](AGENTS.md)
 - Wave 4 em paralelo: [F04 Checkout web #2](https://github.com/joseasousa/07-desafio-catraca-brief-produto/pull/2) e [F05 API de parceiros #1](https://github.com/joseasousa/07-desafio-catraca-brief-produto/pull/1).
