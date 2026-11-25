@@ -1,10 +1,14 @@
 services:
+  app:
+    networks:
+      default:
+        aliases: [catraca.test]
   browser:
     build: ./e2e
     init: true
     shm_size: 1gb
     environment:
-      CATRACA_WEB: http://app:8080
+      CATRACA_WEB: http://catraca.test:8080
     depends_on:
       app:
         condition: service_healthy
