@@ -172,7 +172,7 @@ const eventFormBody = `
 <h1>{{if .Data.Event.ID}}{{.Data.Event.Name}}{{else}}Criar evento{{end}}</h1>
 {{if .Data.Error}}<p role="alert">{{.Data.Error}}</p>{{end}}
 {{if ne .Data.Event.Status "cancelled"}}
-<form method="post">
+<form method="post" action="{{if .Data.Event.ID}}/organizador/eventos/{{.Data.Event.ID}}{{else}}/organizador/eventos/novo{{end}}">
 <input type="hidden" name="csrf" value="{{.CSRF}}">
 <label>Nome <input name="name" value="{{.Data.Event.Name}}" required></label>
 <label>Data e hora de início <input name="startsAt" type="datetime-local" value="{{.Data.Event.StartInput}}" required></label>
@@ -186,7 +186,44 @@ const eventFormBody = `
 <input type="hidden" name="csrf" value="{{.CSRF}}"><button>Publicar</button></form>
 {{end}}
 {{end}}
-{{if .Data.Event.ID}}<p>{{if eq .Data.Event.Status "draft"}}Rascunho{{else if eq .Data.Event.Status "published"}}Publicado{{else}}Evento cancelado{{end}}</p>{{end}}`
+{{if .Data.Event.ID}}<p>{{if eq .Data.Event.Status "draft"}}Rascunho{{else if eq .Data.Event.Status "published"}}Publicado{{else}}Evento cancelado{{end}}</p>
+{{if .Data.Message}}<p role="status">{{.Data.Message}}</p>{{end}}
+{{if eq .Data.Event.Status "published"}}
+<form method="post" action="/organizador/eventos/{{.Data.Event.ID}}/check-in">
+<input type="hidden" name="csrf" value="{{.CSRF}}">
+<label>Código do ingresso <input name="code" required></label><button>Fazer check-in</button>
+</form>
+<form method="post" action="/organizador/eventos/{{.Data.Event.ID}}/cancelar">
+<input type="hidden" name="csrf" value="{{.CSRF}}"><button>Cancelar evento</button>
+</form>
+{{end}}
+<section aria-labelledby="painel"><h2 id="painel">Painel</h2><dl>
+<div><dt>Confirmados</dt><dd>{{.Data.Panel.Confirmed}}</dd></div>
+<div><dt>Pendentes</dt><dd>{{.Data.Panel.Pending}}</dd></div>
+<div><dt>Check-ins</dt><dd>{{.Data.Panel.CheckIns}}</dd></div>
+<div><dt>Vagas disponíveis</dt><dd>{{.Data.Panel.Seats}}</dd></div>
+<div><dt>Receita</dt><dd>R$ {{.Data.Panel.RevenueLabel}}</dd></div>
+<div><dt>Estornados</dt><dd>{{.Data.Panel.Refunded}}</dd></div>
+</dl></section>
+{{end}}`
+
+type eventPage struct {
+	Event          Event
+	Panel          eventPanel
+	Error, Message string
+}
+
+func (a *App) renderEvent(w http.ResponseWriter, r *http.Request, status int, page eventPage) {
+	if page.Event.ID != "" {
+		panel, err := a.panel(r.Context(), page.Event.ID)
+		if err != nil {
+			eventFailure(w, err)
+			return
+		}
+		page.Panel = panel
+	}
+	a.render(w, r, status, "Evento", eventFormBody, page)
+}
 
 func parseEvent(r *http.Request, event Event) (Event, error) {
 	event.Name = strings.TrimSpace(r.PostFormValue("name"))
@@ -216,10 +253,7 @@ func (a *App) eventForm(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	ctx, id := r.Context(), r.PathValue("id")
-	page := struct {
-		Event Event
-		Error string
-	}{}
+	page := eventPage{}
 	if id != "" {
 		event, err := ownedEvent(ctx, a.DB, id, user.ID)
 		if err != nil {
@@ -229,7 +263,7 @@ func (a *App) eventForm(w http.ResponseWriter, r *http.Request) {
 		page.Event = event
 	}
 	if r.Method == http.MethodGet {
-		a.render(w, r, http.StatusOK, "Evento", eventFormBody, page)
+		a.renderEvent(w, r, http.StatusOK, page)
 		return
 	}
 	r.Body = http.MaxBytesReader(w, r.Body, 8192)
@@ -269,7 +303,7 @@ func (a *App) eventForm(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/organizador/eventos/"+id, http.StatusSeeOther)
 	case errEventInvalid, errEventCapacity:
 		page.Event, page.Error = event, err.Error()
-		a.render(w, r, http.StatusUnprocessableEntity, "Evento", eventFormBody, page)
+		a.renderEvent(w, r, http.StatusUnprocessableEntity, page)
 	default:
 		eventFailure(w, err)
 	}

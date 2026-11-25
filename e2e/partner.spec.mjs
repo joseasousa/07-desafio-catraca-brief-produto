@@ -107,5 +107,9 @@ test('F05: duas rajadas de 30 compras HTTP disputam cinco lugares', async ({ pag
     }, { timeout: 8000 }).toEqual(Array(5).fill('confirmed'));
     const listed = await (await request.get(events, { headers })).json();
     expect(listed.find((entry) => entry.id === id).availableSeats).toBe(0);
+    await page.reload();
+    const stats = page.locator('dl > div');
+    await expect(stats.filter({ has: page.getByText('Confirmados', { exact: true }) }).locator('dd')).toHaveText('5');
+    await expect(stats.filter({ has: page.getByText('Vagas disponíveis', { exact: true }) }).locator('dd')).toHaveText('0');
   }
 });
