@@ -4,12 +4,12 @@ MVP local de ingressos para eventos pequenos.
 
 ## Como rodar
 
-Pré-requisitos: Git, Docker com Compose e um shell em Linux ou macOS.
+Pré-requisitos: Git, Docker com Compose, Make e um shell em Linux ou macOS.
 
 ```sh
-./scripts/up
-./scripts/gates
-./scripts/down
+make up
+make gates
+make down
 ```
 
 ## Endereços

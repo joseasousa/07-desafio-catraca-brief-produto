@@ -1,6 +1,6 @@
 # F06 — Contrato
 
-Subir com `./scripts/up` e usar os dois organizadores, um participante e a chave do README. Preparar ingressos web e API em eventos publicados com vagas.
+Subir com `make up` e usar os dois organizadores, um participante e a chave do README. Preparar ingressos web e API em eventos publicados com vagas.
 
 - F06-1 → X26. Em outro evento e para código inexistente, conferir Ingresso inválido para este evento. Para ingresso não confirmado, conferir Ingresso não confirmado. Conferir que usuários sem acesso não podem executar ações por URL direta.
 - F06-2 → X36. Usar os cartões com final 0003 e 0001. Depois da confirmação rápida e antes de 30 s, cancelar. Verificar desaparecimento da vitrine e da API, compra 404 event_not_available, edição e publicação bloqueadas, status refunded e cancelled em até 10 s e os mesmos status após 45 s. Conferir Evento cancelado e painel com zero confirmados, pendentes, check-ins, vagas e receita. Estornados corresponde aos ingressos antes confirmados.
