@@ -119,7 +119,17 @@ const eventListBody = `
 {{range .Data.Events}}<article>
 <h2>{{if $.Data.Manage}}<a href="/organizador/eventos/{{.ID}}">{{.Name}}</a>{{else}}{{.Name}}{{end}}</h2>
 <p>{{.Location}} · {{.StartInput}} · R$ {{.Price}}</p>
-{{if not $.Data.Manage}}<p>Vagas disponíveis: {{.AvailableSeats}}</p>{{end}}
+{{if not $.Data.Manage}}
+<p>Vagas disponíveis: {{.AvailableSeats}}</p>
+{{if le .AvailableSeats 0}}<p>Ingressos esgotados</p>
+{{else if eq $.User.Role "participant"}}
+<form method="post" action="/eventos/{{.ID}}/comprar">
+<input type="hidden" name="csrf" value="{{$.CSRF}}">
+<label>Cartão <input name="cardNumber" inputmode="numeric" autocomplete="off" pattern="[0-9]{16}" maxlength="16" required></label>
+<button>Comprar ingresso</button>
+</form>
+{{else if not $.User.ID}}<p><a href="/entrar">Entre para comprar</a></p>{{end}}
+{{end}}
 </article>{{end}}`
 
 func (a *App) eventList(w http.ResponseWriter, r *http.Request) {
